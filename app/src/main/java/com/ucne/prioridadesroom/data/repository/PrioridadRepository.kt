@@ -17,7 +17,7 @@ class PrioridadRepository @Inject constructor(
         prioridadDao.delete(prioridadEntity)
     }
 
-    suspend fun getPrioridad(): Flow<List<PrioridadEntity>> {
+    fun getPrioridad(): Flow<List<PrioridadEntity>> {
         return prioridadDao.getAll()
     }
 }

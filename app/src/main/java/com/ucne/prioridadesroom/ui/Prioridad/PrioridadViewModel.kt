@@ -1,11 +1,13 @@
 package com.ucne.prioridadesroom.ui.Prioridad
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucne.prioridadesroom.data.dao.PrioridadDao
 import com.ucne.prioridadesroom.data.entity.PrioridadEntity
 import com.ucne.prioridadesroom.data.repository.PrioridadRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +20,7 @@ class PrioridadViewModel @Inject constructor(
 ): ViewModel() {
     private val _state = MutableStateFlow(PrioridadState())
     val state = _state.asStateFlow()
-
+    val prioridades: Flow<List<PrioridadEntity>> = prioridadRepository.getPrioridad()
  /*   fun save() {
         viewModelScope.launch {
             prioridadRepository.save(_state.value.prioridades).collectLatest { result ->
@@ -128,7 +130,7 @@ class PrioridadViewModel @Inject constructor(
                 )
                 _state.update {
                     it.copy(
-                        succesMessage = "Se guardo correctamente"
+                        succesMessage = "Se guardo correctamente",
                     )
                 }
                 viewModelScope.launch {

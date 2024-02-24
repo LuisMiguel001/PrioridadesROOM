@@ -2,6 +2,7 @@ package com.ucne.prioridadesroom.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
 import com.ucne.prioridadesroom.data.entity.PrioridadEntity
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PrioridadDao {
 
-    @Upsert()
+    @Upsert
     suspend fun upsert(prioridad: PrioridadEntity)
 
     @Delete
