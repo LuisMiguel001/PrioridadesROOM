@@ -17,25 +17,27 @@ import javax.inject.Inject
 @HiltViewModel
 class PrioridadViewModel @Inject constructor(
     private val prioridadRepository: PrioridadRepository
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(PrioridadState())
     val state = _state.asStateFlow()
     val prioridades: Flow<List<PrioridadEntity>> = prioridadRepository.getPrioridad()
- /*   fun save() {
-        viewModelScope.launch {
-            prioridadRepository.save(_state.value.prioridades).collectLatest { result ->
-                when (result) {
-                }
-            }
-        }
-    }*/
+    /*   fun save() {
+           viewModelScope.launch {
+               prioridadRepository.save(_state.value.prioridades).collectLatest { result ->
+                   when (result) {
+                   }
+               }
+           }
+       }*/
 
-    fun onEvent(event: PrioridadEvent){
-        when(event){
+    fun onEvent(event: PrioridadEvent) {
+        when (event) {
             is PrioridadEvent.IdPrioridad -> {
                 _state.update {
                     it.copy(
-                        prioridades = it.prioridades.copy(idPrioridad = event.idPrioridad.toIntOrNull()?:0)
+                        prioridades = it.prioridades.copy(
+                            idPrioridad = event.idPrioridad.toIntOrNull() ?: 0
+                        )
                     )
                 }
             }
@@ -59,7 +61,7 @@ class PrioridadViewModel @Inject constructor(
             is PrioridadEvent.Plazo -> {
                 _state.update {
                     it.copy(
-                        prioridades = it.prioridades.copy(plazo = event.plazo.toIntOrNull()?:0)
+                        prioridades = it.prioridades.copy(plazo = event.plazo.toIntOrNull() ?: 0)
                     )
                 }
             }
@@ -75,7 +77,9 @@ class PrioridadViewModel @Inject constructor(
             is PrioridadEvent.CreadoPor -> {
                 _state.update {
                     it.copy(
-                        prioridades = it.prioridades.copy(Creador = event.creadoPor.toIntOrNull()?:0)
+                        prioridades = it.prioridades.copy(
+                            Creador = event.creadoPor.toIntOrNull() ?: 0
+                        )
                     )
                 }
             }
@@ -91,7 +95,9 @@ class PrioridadViewModel @Inject constructor(
             is PrioridadEvent.ModificadoPor -> {
                 _state.update {
                     it.copy(
-                        prioridades = it.prioridades.copy(modidicador = event.modificadoPor.toIntOrNull()?:0)
+                        prioridades = it.prioridades.copy(
+                            modidicador = event.modificadoPor.toIntOrNull() ?: 0
+                        )
                     )
                 }
             }
@@ -128,14 +134,16 @@ class PrioridadViewModel @Inject constructor(
                     modidicador = modificadoPor,
                     fechaModificacion = fechaModificaion,
                 )
-                _state.update {
-                    it.copy(
-                        succesMessage = "Se guardo correctamente",
-                    )
-                }
+
                 viewModelScope.launch {
                     prioridadRepository.upsert(prioridad)
+                    _state.update {
+                        it.copy(
+                            succesMessage = "Se guardo correctamente"
+                        )
+                    }
                 }
+
                 _state.update {
                     it.copy(
                         prioridades = PrioridadEntity()
@@ -150,25 +158,33 @@ class PrioridadViewModel @Inject constructor(
                     )
                 }
             }
+
+            is PrioridadEvent.onDelete -> {
+                viewModelScope.launch {
+                    prioridadRepository.delete(event.prioridad)
+                }
+            }
             else -> {}
         }
     }
 }
+
 data class PrioridadState(
     val prioridades: PrioridadEntity = PrioridadEntity(),
     val succesMessage: String? = null,
 )
 
 sealed interface PrioridadEvent {
-    data class IdPrioridad(val idPrioridad: String): PrioridadEvent
-    data class Nombre(val nombre: String): PrioridadEvent
-    data class Descripcion(val descripcion: String): PrioridadEvent
-    data class Plazo(val plazo: String): PrioridadEvent
-    data class IsNull(val esNulo: String): PrioridadEvent
-    data class CreadoPor(val creadoPor: String): PrioridadEvent
-    data class FechaCreacion(val fechaCreacion: String): PrioridadEvent
-    data class ModificadoPor(val modificadoPor: String): PrioridadEvent
-    data class FechaModificaion(val fechaModificaion: String): PrioridadEvent
-    object onSave: PrioridadEvent
-    object onNew: PrioridadEvent
+    data class IdPrioridad(val idPrioridad: String) : PrioridadEvent
+    data class Nombre(val nombre: String) : PrioridadEvent
+    data class Descripcion(val descripcion: String) : PrioridadEvent
+    data class Plazo(val plazo: String) : PrioridadEvent
+    data class IsNull(val esNulo: String) : PrioridadEvent
+    data class CreadoPor(val creadoPor: String) : PrioridadEvent
+    data class FechaCreacion(val fechaCreacion: String) : PrioridadEvent
+    data class ModificadoPor(val modificadoPor: String) : PrioridadEvent
+    data class FechaModificaion(val fechaModificaion: String) : PrioridadEvent
+    data class onDelete(val prioridad: PrioridadEntity): PrioridadEvent
+    object onSave : PrioridadEvent
+    object onNew : PrioridadEvent
 }

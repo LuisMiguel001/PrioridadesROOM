@@ -39,19 +39,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             PrioridadesROOMTheme(darkTheme = false){
                 val navController = rememberNavController()
-
-                // Estado para controlar la visibilidad de la barra de navegación
                 var showBottomBar by remember { mutableStateOf(true) }
 
                 Scaffold(
                     topBar = {
-                        // Barra de navegación en la parte superior
                         TopAppBar(
                             title = {
-                                Text(text = "Prioridades App")
+                                Text(text = "Prioridades ROOM")
                             },
                             actions = {
-                                // Botones de navegación
                                 IconButton(
                                     onClick = {
                                         // Navega a la pantalla de registro
@@ -62,11 +58,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 IconButton(
                                     onClick = {
-                                        // Navega a la pantalla de visualización
-                                        navController.navigate("visualizar")
+                                        navController.navigate("Consulta")
                                     }
                                 ) {
-                                    Icon(imageVector = Icons.Default.List, contentDescription = "Visualizar Prioridades")
+                                    Icon(imageVector = Icons.Default.List, contentDescription = "Consulta Prioridades")
                                 }
                             }
                         )
@@ -78,13 +73,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         composable("registro") {
-                            // Pantalla de registro
                             RegistroScreen(
                                 viewModel = hiltViewModel()
                             )
                         }
-                        composable("visualizar") {
-                            // Pantalla de visualización de registros
+                        composable("Consulta") {
                             Consulta(
                                 viewModel = hiltViewModel()
                             )

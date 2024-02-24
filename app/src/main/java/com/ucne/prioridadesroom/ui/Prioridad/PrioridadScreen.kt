@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,23 +47,11 @@ fun RegistroScreen(
     ) {
         Text(text = "Registro de Prioridad", style = MaterialTheme.typography.bodyMedium)
 
-        state.succesMessage?.let {
-            Text(
-                text = it,
-                color = Color.White
-            )
+        if (state.succesMessage?.isNotBlank() == true) {
+            Text(text = state.succesMessage!!)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = prioridad.idPrioridad.toString(),
-            onValueChange = { viewModel.onEvent(PrioridadEvent.IdPrioridad(it)) },
-            label = { Text(text = "ID: ") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-        )
 
         OutlinedTextField(
             value = prioridad.nombre,
@@ -144,6 +133,22 @@ fun RegistroScreen(
         ) {
             Button(
                 onClick = {
+                    viewModel.onEvent(PrioridadEvent.onNew)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "New")
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+            }
+            Button(
+                onClick = {
                     viewModel.onEvent(PrioridadEvent.onSave)
                     viewModel.onEvent(PrioridadEvent.onNew)
                 },
@@ -155,7 +160,7 @@ fun RegistroScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "Guardar")
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Save")
                     Spacer(modifier = Modifier.width(4.dp))
                 }
             }
