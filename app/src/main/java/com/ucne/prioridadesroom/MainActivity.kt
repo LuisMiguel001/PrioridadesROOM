@@ -26,6 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import com.ucne.prioridadesroom.ui.Prioridad.RegistroScreen
 import com.ucne.prioridadesroom.ui.consulta.Consulta
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.ui.unit.dp
+import com.ucne.prioridadesroom.ui.home.Home
 import com.ucne.prioridadesroom.ui.theme.PrioridadesROOMTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,20 +42,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PrioridadesROOMTheme(darkTheme = false){
+            PrioridadesROOMTheme(darkTheme = true){
                 val navController = rememberNavController()
-                var showBottomBar by remember { mutableStateOf(true) }
 
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text(text = "Prioridades ROOM")
+                                Text(text = "Priorirdad DB")
                             },
                             actions = {
                                 IconButton(
                                     onClick = {
-                                        // Navega a la pantalla de registro
+                                        navController.navigate("home")
+                                    }
+                                ) {
+                                    Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
+                                }
+                                IconButton(
+                                    onClick = {
                                         navController.navigate("registro")
                                     }
                                 ) {
@@ -69,18 +79,17 @@ class MainActivity : ComponentActivity() {
                 ){
                     NavHost(
                         navController = navController,
-                        startDestination = "registro",
+                        startDestination = "home",
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        composable("home") {
+                            Home()
+                        }
                         composable("registro") {
-                            RegistroScreen(
-                                viewModel = hiltViewModel()
-                            )
+                            RegistroScreen()
                         }
                         composable("Consulta") {
-                            Consulta(
-                                viewModel = hiltViewModel()
-                            )
+                            Consulta()
                         }
                     }
                 }

@@ -21,14 +21,6 @@ class PrioridadViewModel @Inject constructor(
     private val _state = MutableStateFlow(PrioridadState())
     val state = _state.asStateFlow()
     val prioridades: Flow<List<PrioridadEntity>> = prioridadRepository.getPrioridad()
-    /*   fun save() {
-           viewModelScope.launch {
-               prioridadRepository.save(_state.value.prioridades).collectLatest { result ->
-                   when (result) {
-                   }
-               }
-           }
-       }*/
 
     fun onEvent(event: PrioridadEvent) {
         when (event) {
@@ -120,7 +112,13 @@ class PrioridadViewModel @Inject constructor(
                 val modificadoPor = state.value.prioridades.modidicador
                 val fechaModificaion = state.value.prioridades.fechaModificacion
 
-                if (nombre.isBlank() || descripcion.isBlank() || fechaCreacion.isBlank()) {
+                if (nombre.isBlank() || descripcion.isBlank() || plazo == 0  || esNulo == null ||
+                    creadoPor == 0 || fechaCreacion.isBlank() || modificadoPor == 0 || fechaModificaion.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            error = "Por favor, complete todos los campos."
+                        )
+                    }
                     return
                 }
 
@@ -135,12 +133,30 @@ class PrioridadViewModel @Inject constructor(
                     fechaModificacion = fechaModificaion,
                 )
 
+                _state.update {
+                    it.copy(
+                        isLoading = true,
+                        error = null,
+                        succesMessage = null
+                    )
+                }
+
                 viewModelScope.launch {
-                    prioridadRepository.upsert(prioridad)
-                    _state.update {
-                        it.copy(
-                            succesMessage = "Se guardo correctamente"
-                        )
+                    try {
+                        prioridadRepository.upsert(prioridad)
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                succesMessage = "Se guardó correctamente"
+                            )
+                        }
+                    } catch (e: Exception) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Error al guardar: ${e.message}"
+                            )
+                        }
                     }
                 }
 
@@ -154,6 +170,8 @@ class PrioridadViewModel @Inject constructor(
             PrioridadEvent.onNew -> {
                 _state.update {
                     it.copy(
+                        succesMessage = null,
+                        error = null,
                         prioridades = PrioridadEntity()
                     )
                 }
@@ -164,12 +182,13 @@ class PrioridadViewModel @Inject constructor(
                     prioridadRepository.delete(event.prioridad)
                 }
             }
-            else -> {}
         }
     }
 }
 
 data class PrioridadState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
     val prioridades: PrioridadEntity = PrioridadEntity(),
     val succesMessage: String? = null,
 )
@@ -184,7 +203,7 @@ sealed interface PrioridadEvent {
     data class FechaCreacion(val fechaCreacion: String) : PrioridadEvent
     data class ModificadoPor(val modificadoPor: String) : PrioridadEvent
     data class FechaModificaion(val fechaModificaion: String) : PrioridadEvent
-    data class onDelete(val prioridad: PrioridadEntity): PrioridadEvent
+    data class onDelete(val prioridad: PrioridadEntity) : PrioridadEvent
     object onSave : PrioridadEvent
     object onNew : PrioridadEvent
 }
